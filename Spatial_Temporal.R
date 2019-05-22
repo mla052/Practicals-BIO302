@@ -74,3 +74,49 @@ data(LakeHuron)
 
 # 2.	Plot the data.
 plot(LakeHuron)
+
+# 3.	Regress the LakeHuron lake level against year using a linear model. Is there a significant trend?
+
+year<-time(LakeHuron)
+fit.lm<-lm(LakeHuron~year)
+summary(fit.lm)
+
+# p-value is 3.545e-08 so yes there is a significant trend
+
+# 4.	Plot the autocorrelation and partial autocorrelation functions for the residuals from this regression. Interpret them.
+acf(resid(fit.lm))
+
+pacf(resid(fit.lm))
+
+# because the acf follows the weight matrix (approximately) and the pacf does not go from 1 to only 0's we can interpret that this has correlation.
+
+
+# 5.	Fit an autoregressive models to the residuals. Compare the results with your interpretation of the PACF plot.
+
+ar(x = resid(fit.lm))
+
+# the coefficients shows the rho values
+# this looks similar to the PACF plot
+# something about termes that I do not understand
+
+
+# 6.	Fit a gls model using a corAR1 correlation structure. Test if the correlation structure is necessary. Is the trend significant?
+year<-time(LakeHuron)
+fit3.gls<-gls(LakeHuron~year)
+summary(fit3.gls)
+
+fit4.gls<-gls(LakeHuron~year, corr=corAR1())
+summary(fit4.gls)
+anova(fit3.gls, fit4.gls)
+
+# Answer the df is lower in fit3.gls and it is higher at AIC in fit3.gls meaning that fit4.gls is the better model. p-value is <.0001 therefore it significant.
+
+
+# 7.	Fit a gls model using a corARMA correlation structure with two AR terms. Is this model an improvement?
+fit5.gls <- gls(LakeHuron ~ year, corr = corARMA(p = 2))
+summary(fit5.gls)
+
+# p-value is 0.0223 so this means this model is an improvement. 
+
+# the ar function and the corARMA gives almost the same coefficients, this is only because one is built later than the other one. 
+
